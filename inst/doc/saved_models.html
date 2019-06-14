@@ -35,7 +35,7 @@ a.sourceLine { text-indent: -1em; padding-left: 1em; }
 pre.numberSource a.sourceLine
   { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(title);
+  { content: attr(data-line-number);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
     border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
@@ -289,6 +289,9 @@ code > span.al { color: #ff0000; font-weight: bold; }
 code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
+
+
+
 </head>
 
 <body>
@@ -313,14 +316,14 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="example" class="section level2">
 <h2>Example</h2>
 <p>Using the same MNIST model described previously, we can easily make predictions for new pre-processed images. For example, we can load the MNIST test data set and create predictions for the first 10 images:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(keras)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(tfdeploy)</a>
-<a class="sourceLine" id="cb1-3" title="3"></a>
-<a class="sourceLine" id="cb1-4" title="4">test_images &lt;-<span class="st"> </span><span class="kw">dataset_mnist</span>()<span class="op">$</span>test<span class="op">$</span>x </a>
-<a class="sourceLine" id="cb1-5" title="5">test_images &lt;-<span class="st"> </span><span class="kw">array_reshape</span>(test_images, <span class="dt">dim =</span> <span class="kw">c</span>(<span class="kw">nrow</span>(test_images), <span class="dv">784</span>)) <span class="op">/</span><span class="st"> </span><span class="dv">255</span></a>
-<a class="sourceLine" id="cb1-6" title="6">test_images &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, <span class="cf">function</span>(i) {test_images[i,]})</a>
-<a class="sourceLine" id="cb1-7" title="7"></a>
-<a class="sourceLine" id="cb1-8" title="8"><span class="kw">predict_savedmodel</span>(processed_test_list, <span class="st">&#39;savedmodel&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(keras)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(tfdeploy)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">test_images &lt;-<span class="st"> </span><span class="kw">dataset_mnist</span>()<span class="op">$</span>test<span class="op">$</span>x </a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">test_images &lt;-<span class="st"> </span><span class="kw">array_reshape</span>(test_images, <span class="dt">dim =</span> <span class="kw">c</span>(<span class="kw">nrow</span>(test_images), <span class="dv">784</span>)) <span class="op">/</span><span class="st"> </span><span class="dv">255</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">test_images &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, <span class="cf">function</span>(i) {test_images[i,]})</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="kw">predict_savedmodel</span>(processed_test_list, <span class="st">'savedmodel'</span>)</a></code></pre></div>
 <pre><code>Prediction 1:
 $prediction
  [1] 3.002971e-37 8.401216e-29 2.932129e-24 4.048731e-22 0.000000e+00 9.172148e-37
@@ -339,15 +342,15 @@ $prediction
 </ol>
 <p>In the previous example we used <code>predict_savedmodel()</code> with the directory, ‘savedmodel’, which was created with the <code>export_savedmodel()</code> function In addition to providing a path to a saved model directory, <code>predict_savedmodel()</code> can also be used with a deployed model by supplying a REST URL, a CloudML model by supplying a CloudML name and version, or by supplying a graph object loaded with <code>load_savedmodel()</code>.</p>
 <p>The last option above references the <code>load_savedmodel()</code> function. <code>load_savedmodel()</code> should be used alongside of <code>predict_savedmodel()</code> if you’ll be calling the prediction function multiple times. <code>load_savedmodel()</code> effectively caches the model graph in memory and can speed up repeated calls to <code>predict_savedmodel()</code>. This caching is useful, for example, in a Shiny application where user input would drive calls to <code>predict_savedmodel()</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># if there will only be one batch of predictions </span></a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="kw">predict_savedmodel</span>(instances, <span class="st">&#39;savedmodel&#39;</span>)</a>
-<a class="sourceLine" id="cb3-3" title="3"></a>
-<a class="sourceLine" id="cb3-4" title="4"><span class="co"># if there will be multiple batches of predictions</span></a>
-<a class="sourceLine" id="cb3-5" title="5">sess &lt;-<span class="st"> </span>tensorflow<span class="op">::</span>tf<span class="op">$</span><span class="kw">Session</span>()</a>
-<a class="sourceLine" id="cb3-6" title="6">graph &lt;-<span class="st"> </span><span class="kw">load_savedmodel</span>(sess, <span class="st">&#39;savedmodel&#39;</span>)</a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="kw">predict_savedmodel</span>(instances, graph)</a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="co"># ... more work ... </span></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="kw">predict_savedmodel</span>(instances, graph)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># if there will only be one batch of predictions </span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">predict_savedmodel</span>(instances, <span class="st">'savedmodel'</span>)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co"># if there will be multiple batches of predictions</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">sess &lt;-<span class="st"> </span>tensorflow<span class="op">::</span>tf<span class="op">$</span><span class="kw">Session</span>()</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">graph &lt;-<span class="st"> </span><span class="kw">load_savedmodel</span>(sess, <span class="st">'savedmodel'</span>)</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="kw">predict_savedmodel</span>(instances, graph)</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co"># ... more work ... </span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="kw">predict_savedmodel</span>(instances, graph)</a></code></pre></div>
 </div>
 <div id="model-representations" class="section level2">
 <h2>Model Representations</h2>
